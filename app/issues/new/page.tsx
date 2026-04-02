@@ -1,15 +1,14 @@
-import { Button, TextArea, TextField } from '@radix-ui/themes'
-import React from 'react'
+import { Button, TextField } from '@radix-ui/themes'
+import SimpleEditor from './SimpleEditor'
 
-const newIssuepage = () => {
+const NewIssuePage = () => {
   return (
-    <div className='max-w-xl space-y-3 '>
-        <TextField.Root placeholder='Title'>
-        </TextField.Root>
-        <TextArea placeholder="Description" />
-        <Button>Submit New Issue</Button>
+    <div className='max-w-xl space-y-3'>
+      <TextField.Root placeholder='Title' />
+      <SimpleEditor />
+      <Button>Submit New Issue</Button>
     </div>
   )
 }
 
-export default newIssuepage
+export default NewIssuePage
