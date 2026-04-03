@@ -13,6 +13,7 @@ import { createIssueSchema } from '@/app/validationSchemas'
 import { z } from 'zod' 
 import dynamic from "next/dynamic";
 import ErrorMessage from '@/app/component/ErrorMessage';
+import Spinner from '@/app/component/Spinner';
 
 const SimpleMDE = dynamic(
   () => import("react-simplemde-editor"),
@@ -27,6 +28,7 @@ export default function NewIssueForm() {
   });
   const router = useRouter();
   const [error, setError] = useState('');
+  const [ isSubmitting, setSubmitting ] = useState(false);
   
 
   return (
@@ -36,10 +38,12 @@ export default function NewIssueForm() {
       </Callout.Root>}
       <form onSubmit={handleSubmit(async (data) => {
         try {
+          setSubmitting(true);
           await axios.post('/api/issues', data);
           router.push('/issues');
         } catch (error) {
           setError('An Unexpected error occured.');
+          setSubmitting(false);
         }
         
       })} className='space-y-3'>
@@ -49,7 +53,7 @@ export default function NewIssueForm() {
         <ErrorMessage>
           {errors.title?.message}
         </ErrorMessage>
-        
+
         <Controller
           name="description"
           control={control}
@@ -61,7 +65,7 @@ export default function NewIssueForm() {
           {errors.description?.message}
         </ErrorMessage>
 
-        <Button type="submit">Submit New Issue</Button>
+        <Button disabled={isSubmitting}>Submit New Issue { isSubmitting && <Spinner/> }</Button>
       </form>
     </div>
   )
