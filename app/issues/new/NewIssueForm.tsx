@@ -12,6 +12,7 @@ import { create } from 'node:domain'
 import { createIssueSchema } from '@/app/validationSchemas'
 import { z } from 'zod' 
 import dynamic from "next/dynamic";
+import ErrorMessage from '@/app/component/ErrorMessage';
 
 const SimpleMDE = dynamic(
   () => import("react-simplemde-editor"),
@@ -45,7 +46,9 @@ export default function NewIssueForm() {
         
         <TextField.Root placeholder='Title' {...register('title')}>
         </TextField.Root>
-        {errors.title && <Text color="red" as="p">{errors.title.message}</Text>}
+        <ErrorMessage>
+          {errors.title?.message}
+        </ErrorMessage>
         
         <Controller
           name="description"
@@ -54,7 +57,9 @@ export default function NewIssueForm() {
             <SimpleMDE {...field} />
           )}
         />
-        { errors.description && <Text color="red" as="p" className='mb-5'>{errors.description.message}</Text>}
+        <ErrorMessage>
+          {errors.description?.message}
+        </ErrorMessage>
 
         <Button type="submit">Submit New Issue</Button>
       </form>
