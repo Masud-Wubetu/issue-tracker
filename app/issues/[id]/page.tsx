@@ -1,18 +1,15 @@
 import IssueStatusBadge from '@/app/component/IssueStatusBadge';
-import { prisma } from '@/prisma/client'
+import { prisma } from '@/prisma/client';
 import { Card, Flex, Heading, Text } from '@radix-ui/themes';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
 
-interface Props {
+
+interface Props { 
     params: { id: string }
 }
 
 const IssueDetailpage = async ({ params }: Props) => {
-
-
     const { id } = await params;
 
     const issue = await prisma.issue.findUnique({
@@ -28,9 +25,9 @@ const IssueDetailpage = async ({ params }: Props) => {
                 <IssueStatusBadge status={issue.status} />
                 <Text>{issue.createdAt.toDateString()}</Text>
             </Flex>
-            <div className='prose prose-slate max-w-none p-6 bg-white rounded-lg border'>
-                <ReactMarkdown remarkPlugins={[remarkGfm as any]} rehypePlugins={[rehypeRaw as any]}>{issue.description}</ReactMarkdown>
-            </div>
+            <Card className='prose !max-w-2xl' mt='4'>
+                <ReactMarkdown>{issue.description}</ReactMarkdown>
+            </Card>
         </div>
     )
 }
