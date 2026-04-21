@@ -8,6 +8,9 @@ import { getServerSession } from 'next-auth';
 import authOptions from '@/app/auth/authOptions';
 import AssigneeSelect from './AssigneeSelect';
 import AttachmentSection from './AttachmentSection';
+import CommentSection from './CommentSection';
+import StatusSelect from './StatusSelect';
+
 
 interface Props { 
     params: { id: string }
@@ -39,11 +42,14 @@ const IssueDetailpage = async ({ params }: Props) => {
           <Box className='md:col-span-4'>
             <IssueDetails issue={issue} />
             <AttachmentSection issueId={issue.id} attachments={issue.attachments} />
+            <CommentSection issueId={issue.id} />
           </Box>
           {session && (
             <Box>
               <Flex direction="column" gap="4">
+                <StatusSelect issueId={issue.id} status={issue.status} />
                 <AssigneeSelect issue={issue} />
+
                 <EditIssueButton issueId={issue.id} />
                 <DeleteIssueButton issueId={issue.id} />
               </Flex>

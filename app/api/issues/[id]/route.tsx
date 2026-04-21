@@ -50,6 +50,11 @@ export async function DELETE(
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({}, { status: 401 });
 
+  const role = (session.user as any).role;
+  if (role !== "ADMIN" && role !== "MANAGER")
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+
   const issue = await prisma.issue.findUnique({ where: { id: parseInt(params.id) } });
   if (!issue) return NextResponse.json({ error: "Invalid issue" }, { status: 404 });
 
