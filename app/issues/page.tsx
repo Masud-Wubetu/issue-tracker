@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { Table, Flex } from '@radix-ui/themes'
+import { Table, Flex, Text } from '@radix-ui/themes'
 import Link from '@/app/component/Link'
 import NextLink from 'next/link';
 import { prisma } from '@/prisma/client'
