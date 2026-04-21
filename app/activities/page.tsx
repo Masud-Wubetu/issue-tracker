@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import authOptions from "@/app/auth/authOptions";
 import { prisma } from "@/prisma/client";
-import { Avatar, Box, Card, Flex, Heading, Text, Badge } from "@radix-ui/themes";
+import { Avatar, Box, Card, Flex, Heading, Text, Badge, Container, Button } from "@radix-ui/themes";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -9,13 +9,18 @@ export default async function GlobalActivitiesPage() {
   const session = await getServerSession(authOptions);
   if (!session) redirect("/auth/signin");
 
-  const role = (session.user as any).role;
+  const role = (session.user as any)?.role;
   if (!["ADMIN", "MANAGER"].includes(role)) {
     return (
-      <Flex direction="column" align="center" justify="center" mt="9">
-        <Heading color="red">Access Denied</Heading>
-        <Text>Only Admins and Managers can view the global audit trail.</Text>
-      </Flex>
+      <Container size="2">
+        <Flex direction="column" align="center" justify="center" mt="9" gap="4">
+          <Heading size="8" color="red">Access Denied</Heading>
+          <Text size="4" color="gray">Only Admins and Managers can view the global audit trail.</Text>
+          <Button variant="soft" color="violet" asChild>
+            <Link href="/dashboard">Back to Dashboard</Link>
+          </Button>
+        </Flex>
+      </Container>
     );
   }
 
@@ -29,39 +34,71 @@ export default async function GlobalActivitiesPage() {
   });
 
   return (
-    <Box maxW="800px" mx="auto">
-      <Heading size="8" mb="2">Audit Trail</Heading>
-      <Text color="gray" mb="6">Track system-wide actions and updates.</Text>
+    <Container size="3">
+      <Box mb="6">
+        <Heading size="8" mb="1">Audit Trail</Heading>
+        <Text color="gray">Tracking system-wide actions and updates for transparency.</Text>
+      </Box>
 
       <Flex direction="column" gap="4">
-        {logs.map((log) => {
-          const initials = (log.user.name || "?").split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
-          return (
-            <Card key={log.id}>
-              <Flex gap="3" align="start">
-                <Avatar src={log.user.image ?? undefined} fallback={initials} size="2" radius="full" color="violet" />
-                <Box style={{ flex: 1 }}>
-                  <Flex justify="between" align="center" mb="1">
-                    <Flex gap="2" align="center">
-                      <Text size="2" weight="bold">{log.user.name}</Text>
-                      <Badge size="1" color="gray">{log.user.role}</Badge>
+        {logs.length === 0 ? (
+          <Card>
+            <Flex align="center" justify="center" p="8">
+              <Text color="gray">No activity logs found yet.</Text>
+            </Flex>
+          </Card>
+        ) : (
+          logs.map((log) => {
+            const userName = log.user?.name || "Unknown User";
+            const initials = userName.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+            
+            return (
+              <Card key={log.id} variant="surface">
+                <Flex gap="4" align="start">
+                  <Avatar 
+                    src={log.user?.image ?? undefined} 
+                    fallback={initials} 
+                    size="3" 
+                    radius="full" 
+                    color="violet" 
+                  />
+                  <Box style={{ flex: 1 }}>
+                    <Flex justify="between" align="center" mb="1">
+                      <Flex gap="2" align="center">
+                        <Text size="2" weight="bold">{userName}</Text>
+                        <Badge size="1" variant="soft" color="violet">{log.user?.role}</Badge>
+                      </Flex>
+                      <Text size="1" color="gray">
+                        {new Date(log.timestamp).toLocaleString(undefined, {
+                          dateStyle: 'medium',
+                          timeStyle: 'short'
+                        })}
+                      </Text>
                     </Flex>
-                    <Text size="1" color="gray">
-                      {new Date(log.timestamp).toLocaleString()}
+                    <Text size="2" color="gray" mb="1">
+                      {log.action}
                     </Text>
-                  </Flex>
-                  <Text size="2">
-                    {log.action} on <Link href={`/issues/${log.issueId}`} style={{ color: 'var(--violet-11)', fontWeight: 500 }}>
-                      #{log.issueId}: {log.issue.title}
+                    <Link 
+                      href={`/issues/${log.issueId}`} 
+                      style={{ 
+                        display: 'inline-block',
+                        color: 'var(--violet-11)', 
+                        fontWeight: 600,
+                        fontSize: 'var(--font-size-2)',
+                        textDecoration: 'none'
+                      }}
+                      className="hover:underline"
+                    >
+                      #{log.issueId}: {log.issue?.title || "Deleted Issue"}
                     </Link>
-                  </Text>
-                </Box>
-              </Flex>
-            </Card>
-          );
-        })}
+                  </Box>
+                </Flex>
+              </Card>
+            );
+          })
+        )}
       </Flex>
-    </Box>
+    </Container>
   );
 }
 

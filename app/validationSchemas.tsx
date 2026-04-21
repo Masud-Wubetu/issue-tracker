@@ -3,9 +3,9 @@ import { z } from "zod";
 export const createIssueSchema = z.object({
     title: z.string().min(1, 'Title is required.').max(255),
     description: z.string().min(1, 'Description is required.'),
-    priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).default('MEDIUM'),
-    type: z.enum(['BUG', 'FEATURE', 'TASK', 'IMPROVEMENT']).default('BUG'),
-    projectId: z.number({ required_error: 'Project is required.' }),
+    priority: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']),
+    type: z.enum(['BUG', 'FEATURE', 'TASK', 'IMPROVEMENT']),
+    projectId: z.number({ message: 'Project is required.' }),
     assigneeId: z.string().optional().nullable(),
     dueDate: z.string().optional().nullable(),
 });
