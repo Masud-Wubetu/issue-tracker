@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Callout, Text, TextField } from '@radix-ui/themes'
+import { Button, Callout, Text, TextField, Grid, Flex, Select } from '@radix-ui/themes'
 import { useForm } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
 import "easymde/dist/easymde.min.css"
@@ -8,7 +8,6 @@ import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { create } from 'node:domain'
 import { createIssueSchema } from '@/app/validationSchemas'
 import { z } from 'zod' 
 import dynamic from "next/dynamic";
@@ -24,7 +23,11 @@ type IssueForm = z.infer<typeof createIssueSchema>;
 
 export default function NewIssueForm() {
   const { register, handleSubmit, control, formState: { errors } } = useForm<IssueForm>({
-    resolver: zodResolver(createIssueSchema)
+    resolver: zodResolver(createIssueSchema),
+    defaultValues: {
+      priority: 'MEDIUM',
+      type: 'BUG'
+    }
   });
   const router = useRouter();
   const [error, setError] = useState('');
@@ -54,6 +57,46 @@ export default function NewIssueForm() {
         <ErrorMessage>
           {errors.title?.message}
         </ErrorMessage>
+
+        <Grid columns={{ initial: "1", sm: "2" }} gap="3">
+          <Flex direction="column" gap="1">
+            <Text size="2" weight="bold">Type</Text>
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <Select.Root onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select.Trigger placeholder="Select Type..." />
+                  <Select.Content>
+                    <Select.Item value="BUG">Bug</Select.Item>
+                    <Select.Item value="FEATURE">Feature</Select.Item>
+                    <Select.Item value="TASK">Task</Select.Item>
+                    <Select.Item value="IMPROVEMENT">Improvement</Select.Item>
+                  </Select.Content>
+                </Select.Root>
+              )}
+            />
+          </Flex>
+
+          <Flex direction="column" gap="1">
+            <Text size="2" weight="bold">Priority</Text>
+            <Controller
+              name="priority"
+              control={control}
+              render={({ field }) => (
+                <Select.Root onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select.Trigger placeholder="Select Priority..." />
+                  <Select.Content>
+                    <Select.Item value="LOW">Low</Select.Item>
+                    <Select.Item value="MEDIUM">Medium</Select.Item>
+                    <Select.Item value="HIGH">High</Select.Item>
+                    <Select.Item value="CRITICAL">Critical</Select.Item>
+                  </Select.Content>
+                </Select.Root>
+              )}
+            />
+          </Flex>
+        </Grid>
 
         <Controller
           name="description"

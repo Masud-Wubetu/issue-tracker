@@ -15,6 +15,8 @@ model Issue {
   title       String   @db.VarChar(255)
   description String   @db.Text
   status      Status   @default(OPEN)
+  priority    Priority @default(MEDIUM)
+  type        IssueType @default(BUG)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -22,5 +24,21 @@ model Issue {
 enum Status {
   OPEN
   IN_PROGRESS
+  IN_REVIEW
+  RESOLVED
   CLOSED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IssueType {
+  BUG
+  FEATURE
+  TASK
+  IMPROVEMENT
 }

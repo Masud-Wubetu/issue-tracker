@@ -1,14 +1,17 @@
+
 import React from 'react'
-import { Button, Table } from '@radix-ui/themes'
-import Link from '../../app/component/Link'
+import { Table } from '@radix-ui/themes'
+import Link from '@/app/component/Link'
 import { prisma } from '@/prisma/client'
 import IssueStatusBadge from '../component/IssueStatusBadge'
-import delay from 'delay';
+import IssuePriorityBadge from '../component/IssuePriorityBadge'
+import IssueTypeBadge from '../component/IssueTypeBadge'
 import IssueActions from './IssueActions'
 
 const IssuesPage = async () => {
-  const issues = await prisma.issue.findMany();
-  await delay(2000);
+  const issues = await prisma.issue.findMany({
+    orderBy: { createdAt: 'desc' }
+  });
 
   return (
     <div>
@@ -17,6 +20,8 @@ const IssuesPage = async () => {
         <Table.Header>
           <Table.Row>
             <Table.ColumnHeaderCell>Issue</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell className='hidden md:table-cell'>Type</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell className='hidden md:table-cell'>Priority</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell className='hidden md:table-cell'>Status</Table.ColumnHeaderCell>
             <Table.ColumnHeaderCell className='hidden md:table-cell'>Created</Table.ColumnHeaderCell>
           </Table.Row>
@@ -28,7 +33,16 @@ const IssuesPage = async () => {
                 <Link href={`/issues/${issue.id}`}>
                   {issue.title}
                 </Link>
-                <div className='block md:hidden'><IssueStatusBadge status={issue.status}/></div>
+                <div className='flex md:hidden gap-2 mt-1'>
+                  <IssueTypeBadge type={issue.type}/>
+                  <IssueStatusBadge status={issue.status}/>
+                </div>
+              </Table.Cell>
+              <Table.Cell className='hidden md:table-cell'>
+                <IssueTypeBadge type={issue.type}/>
+              </Table.Cell>
+              <Table.Cell className='hidden md:table-cell'>
+                <IssuePriorityBadge priority={issue.priority}/>
               </Table.Cell>
               <Table.Cell className='hidden md:table-cell'>
                 <IssueStatusBadge status={issue.status}/>

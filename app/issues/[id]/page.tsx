@@ -1,4 +1,6 @@
 import IssueStatusBadge from '@/app/component/IssueStatusBadge';
+import IssuePriorityBadge from '@/app/component/IssuePriorityBadge';
+import IssueTypeBadge from '@/app/component/IssueTypeBadge';
 import { prisma } from '@/prisma/client';
 import { Card, Flex, Heading, Text } from '@radix-ui/themes';
 import { notFound } from 'next/navigation';
@@ -21,9 +23,11 @@ const IssueDetailpage = async ({ params }: Props) => {
     return (
         <div>
             <Heading>{issue.title}</Heading>
-            <Flex className='space-x-5' my='5'>
+            <Flex className='gap-3' my='5' align="center">
+                <IssueTypeBadge type={issue.type} />
                 <IssueStatusBadge status={issue.status} />
-                <Text>{issue.createdAt.toDateString()}</Text>
+                <IssuePriorityBadge priority={issue.priority} />
+                <Text size="2" color="gray">{issue.createdAt.toDateString()}</Text>
             </Flex>
             <Card className='prose !max-w-2xl' mt='4'>
                 <ReactMarkdown>{issue.description}</ReactMarkdown>

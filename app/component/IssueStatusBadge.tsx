@@ -1,12 +1,11 @@
 import { Status } from '@prisma/client'
 import { Badge } from '@radix-ui/themes'
-import { BADFAMILY } from 'node:dns/promises'
-import React from 'react'
-
-const statusMap: Record<Status, { label: string, color: 'red' | 'violet' | 'green'}> = {
+const statusMap: Record<Status, { label: string, color: 'red' | 'violet' | 'green' | 'blue' | 'gray'}> = {
     OPEN: { label: 'Open', color: 'red' },
     IN_PROGRESS: { label: 'In Progress', color: 'violet' },
-    CLOSED: { label: 'Closed', color: 'green' },
+    IN_REVIEW: { label: 'In Review', color: 'blue' },
+    RESOLVED: { label: 'Resolved', color: 'green' },
+    CLOSED: { label: 'Closed', color: 'gray' },
 };
 
 const IssueStatusBadge = ({ status }: { status: Status }) => {
