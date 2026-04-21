@@ -21,6 +21,7 @@ export const metadata: Metadata = {
 
 import AuthProvider from "./auth/Provider";
 import QueryClientProvider from "./QueryClientProvider";
+import ThemeProviders from "./ThemeProviders";
 
 export default function RootLayout({
   children,
@@ -28,16 +29,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.variable}>
         <QueryClientProvider>
           <AuthProvider>
-            <Theme accentColor="violet">
+            <ThemeProviders>
               <NavBar />
               <main className='p-5'>
                 <Container>{children}</Container>
               </main>
-            </Theme>
+            </ThemeProviders>
           </AuthProvider>
         </QueryClientProvider>
       </body>

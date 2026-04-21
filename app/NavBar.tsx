@@ -8,6 +8,7 @@ import React from 'react';
 import { AiFillBug } from "react-icons/ai";
 import classnames from 'classnames';
 import { Avatar, Box, Container, DropdownMenu, Flex, Text } from '@radix-ui/themes';
+import ThemeToggle from './component/ThemeToggle';
 
 const NavBar = () => {
     const { data: session } = useSession();
@@ -24,7 +25,10 @@ const NavBar = () => {
                         </Link>
                         <NavLinks role={role} />
                     </Flex>
-                    <AuthStatus />
+                    <Flex align="center" gap="4">
+                        <ThemeToggle />
+                        <AuthStatus />
+                    </Flex>
                 </Flex>
             </Container>
         </nav>
