@@ -6,10 +6,22 @@ import authOptions from "@/app/auth/authOptions";
 
 export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
-    if (!session)
-        return NextResponse.json({}, { status: 401 });
+    
+    // Determine reporter ID: either logged-in user or the default Visitor
+    let reporterId: string;
+    
+    if (session) {
+        reporterId = (session.user as any).id;
+    } else {
+        const visitor = await prisma.user.findUnique({
+            where: { email: 'visitor@issuetracker.com' }
+        });
+        if (!visitor) return NextResponse.json({ error: 'Visitor account not found' }, { status: 500 });
+        reporterId = visitor.id;
+    }
 
     const body = await request.json();
+
     const validation = createIssueSchema.safeParse(body);
     if (!validation.success)
         return NextResponse.json(validation.error.format(), { status: 400 });
@@ -26,7 +38,7 @@ export async function POST(request: NextRequest) {
             priority: body.priority,
             type: body.type,
             projectId: project.id,
-            reporterId: (session.user as any).id
+            reporterId: reporterId
         }
     });
 
