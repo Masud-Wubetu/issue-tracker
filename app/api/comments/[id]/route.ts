@@ -64,6 +64,15 @@ export async function DELETE(
   if (comment.userId !== userId && !["ADMIN", "MANAGER"].includes(role))
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
+  await prisma.activityLog.create({
+    data: {
+      action: "Deleted a comment",
+      issueId: comment.issueId,
+      userId: (session.user as any).id,
+    },
+  });
+
   await prisma.comment.delete({ where: { id: comment.id } });
   return NextResponse.json({});
 }
+

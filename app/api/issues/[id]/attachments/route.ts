@@ -36,8 +36,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             issueId,
         },
     });
+
+    await prisma.activityLog.create({
+        data: {
+            action: `Uploaded attachment: ${file.name}`,
+            issueId,
+            userId: (session.user as any).id,
+        }
+    });
+
     return NextResponse.json(attachment, { status: 201 });
 }
+
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -52,6 +62,15 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     const filePath = path.join(process.cwd(), "public", attachment.url);
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
+    await prisma.activityLog.create({
+        data: {
+            action: `Deleted attachment: ${attachment.filename}`,
+            issueId: attachment.issueId,
+            userId: (session.user as any).id,
+        }
+    });
+
     await prisma.attachment.delete({ where: { id: attachmentId } });
     return NextResponse.json({ success: true });
 }
+

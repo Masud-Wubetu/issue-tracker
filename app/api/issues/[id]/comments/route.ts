@@ -58,5 +58,14 @@ export async function POST(
     },
   });
 
+  await prisma.activityLog.create({
+    data: {
+      action: "Added a comment",
+      issueId: issue.id,
+      userId: (session.user as any).id,
+    },
+  });
+
   return NextResponse.json(newComment, { status: 201 });
 }
+
