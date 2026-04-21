@@ -51,5 +51,8 @@
     "tailwindcss": "^4.2.2",
     "typescript": "^6.0.2",
     "windy-radix-palette": "^2.0.0-beta.7"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.ts"
   }
 }

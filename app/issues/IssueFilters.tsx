@@ -98,7 +98,7 @@ const IssueFilters = ({ projects, users }: Props) => {
           <Select.Trigger placeholder="Project" />
           <Select.Content>
             <Select.Item value="ALL">All Projects</Select.Item>
-            {projects.map(p => <Select.Item key={p.id} value={p.id.toString()}>{p.name}</Select.Item>)}
+            {projects?.map(p => <Select.Item key={p.id} value={p.id.toString()}>{p.name}</Select.Item>)}
           </Select.Content>
         </Select.Root>
       </Box>
@@ -111,7 +111,7 @@ const IssueFilters = ({ projects, users }: Props) => {
           <Select.Trigger placeholder="Assignee" />
           <Select.Content>
             <Select.Item value="ALL">All Assignees</Select.Item>
-            {users.map(u => <Select.Item key={u.id} value={u.id}>{u.name || 'Unknown'}</Select.Item>)}
+            {users?.map(u => <Select.Item key={u.id} value={u.id}>{u.name || 'Unknown'}</Select.Item>)}
           </Select.Content>
         </Select.Root>
       </Box>

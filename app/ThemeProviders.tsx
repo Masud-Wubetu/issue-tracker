@@ -1,15 +1,16 @@
 'use client';
 
-import { ThemeProvider } from 'next-themes';
-import { Theme } from '@radix-ui/themes';
+import dynamic from 'next/dynamic';
 import { ReactNode } from 'react';
+
+const ThemeProvider = dynamic(() => import('next-themes').then(mod => mod.ThemeProvider), {
+  ssr: true,
+});
 
 export default function ThemeProviders({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class">
-      <Theme accentColor="violet">
-        {children}
-      </Theme>
+      {children}
     </ThemeProvider>
   );
 }
