@@ -17,7 +17,13 @@ interface Props {
 }
 
 const IssueDetailpage = async ({ params }: Props) => {
-    const session = await getServerSession(authOptions);
+    let session = null;
+    try {
+        session = await getServerSession(authOptions);
+    } catch (error) {
+        console.error("Auth session error:", error);
+    }
+
     const { id } = await params;
 
     const issue = await prisma.issue.findUnique({

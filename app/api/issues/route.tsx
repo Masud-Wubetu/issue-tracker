@@ -5,7 +5,12 @@ import { getServerSession } from "next-auth";
 import authOptions from "@/app/auth/authOptions";
 
 export async function POST(request: NextRequest) {
-    const session = await getServerSession(authOptions);
+    let session = null;
+    try {
+        session = await getServerSession(authOptions);
+    } catch (error) {
+        console.error("Auth session error:", error);
+    }
     
     // Determine reporter ID: either logged-in user or the default Visitor
     let reporterId: string;
@@ -21,6 +26,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+
 
     const validation = createIssueSchema.safeParse(body);
     if (!validation.success)

@@ -8,8 +8,15 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions);
+  let session = null;
+  try {
+      session = await getServerSession(authOptions);
+  } catch (error) {
+      console.error("Auth session error:", error);
+  }
+  
   if (!session) return NextResponse.json({}, { status: 401 });
+
 
   const body = await request.json();
   const validation = patchIssueSchema.safeParse(body);
@@ -60,8 +67,15 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions);
+  let session = null;
+  try {
+      session = await getServerSession(authOptions);
+  } catch (error) {
+      console.error("Auth session error:", error);
+  }
+  
   if (!session) return NextResponse.json({}, { status: 401 });
+
 
   const issue = await prisma.issue.findUnique({
     where: { id: parseInt(params.id) },
