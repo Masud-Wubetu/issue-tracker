@@ -36,6 +36,7 @@ const NavLinks = ({ role }: { role?: string }) => {
     const links = [
         { label: 'Dashboard', href: '/' },
         { label: 'Issues', href: '/issues' },
+        ...(role ? [{ label: 'Projects', href: '/projects' }] : []),
         ...(role === 'ADMIN' ? [{ label: 'Users', href: '/admin/users' }] : []),
     ];
 
