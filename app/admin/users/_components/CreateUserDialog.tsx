@@ -41,32 +41,38 @@ export default function CreateUserDialog({ open, onClose, onCreated }: Props) {
     <Dialog.Root open={open} onOpenChange={(o) => { if (!o) { reset(); setError(''); onClose(); } }}>
       <Dialog.Content maxWidth="440px">
         <Dialog.Title>Create New User</Dialog.Title>
-        <Dialog.Description size="2" color="gray" mb="4">
-          Add a new team member to the system.
+        <Dialog.Description size="2" color="gray" mb="5">
+          Invite a new team member to collaborate on your projects.
         </Dialog.Description>
 
-        {error && <Callout.Root color="red" mb="4"><Callout.Text>{error}</Callout.Text></Callout.Root>}
+        {error && (
+          <Callout.Root color="red" mb="4" variant="soft">
+            <Callout.Text>{error}</Callout.Text>
+          </Callout.Root>
+        )}
 
         <form onSubmit={onSubmit}>
-          <Flex direction="column" gap="3">
+          <Flex direction="column" gap="4">
             <Box>
-              <Text as="label" size="2" weight="medium">Full Name</Text>
-              <TextField.Root mt="1" placeholder="Jane Smith" {...register('name')} />
+              <Text as="label" size="2" weight="bold" mb="1" className="block">Full Name</Text>
+              <TextField.Root placeholder="e.g. Jane Smith" size="3" {...register('name')} />
               <ErrorMessage>{errors.name?.message}</ErrorMessage>
             </Box>
+            
             <Box>
-              <Text as="label" size="2" weight="medium">Email</Text>
-              <TextField.Root mt="1" type="email" placeholder="jane@example.com" {...register('email')} />
+              <Text as="label" size="2" weight="bold" mb="1" className="block">Email Address</Text>
+              <TextField.Root type="email" placeholder="jane@example.com" size="3" {...register('email')} />
               <ErrorMessage>{errors.email?.message}</ErrorMessage>
             </Box>
+
             <Box>
-              <Text as="label" size="2" weight="medium">Role</Text>
+              <Text as="label" size="2" weight="bold" mb="1" className="block">System Role</Text>
               <Controller name="role" control={control} render={({ field }) => (
-                <Select.Root onValueChange={field.onChange} defaultValue={field.value}>
-                  <Select.Trigger mt="1" className="w-full" />
-                  <Select.Content>
-                    <Select.Item value="ADMIN">Admin</Select.Item>
-                    <Select.Item value="MANAGER">Manager</Select.Item>
+                <Select.Root onValueChange={field.onChange} defaultValue={field.value} size="3">
+                  <Select.Trigger className="w-full" />
+                  <Select.Content position="popper">
+                    <Select.Item value="ADMIN">Administrator</Select.Item>
+                    <Select.Item value="MANAGER">Project Manager</Select.Item>
                     <Select.Item value="DEVELOPER">Developer</Select.Item>
                     <Select.Item value="QA">QA / Tester</Select.Item>
                     <Select.Item value="VIEWER">Viewer</Select.Item>
@@ -75,18 +81,19 @@ export default function CreateUserDialog({ open, onClose, onCreated }: Props) {
               )} />
               <ErrorMessage>{errors.role?.message}</ErrorMessage>
             </Box>
+
             <Box>
-              <Text as="label" size="2" weight="medium">Password</Text>
-              <TextField.Root mt="1" type="password" placeholder="Min. 5 characters" {...register('password')} />
+              <Text as="label" size="2" weight="bold" mb="1" className="block">Initial Password</Text>
+              <TextField.Root type="password" placeholder="Min. 5 characters" size="3" {...register('password')} />
               <ErrorMessage>{errors.password?.message}</ErrorMessage>
             </Box>
           </Flex>
 
-          <Flex gap="3" mt="5" justify="end">
+          <Flex gap="3" mt="6" justify="end">
             <Dialog.Close>
-              <Button variant="soft" color="gray" type="button">Cancel</Button>
+              <Button variant="soft" color="gray" size="3" type="button">Cancel</Button>
             </Dialog.Close>
-            <Button type="submit" color="violet" disabled={isSubmitting}>
+            <Button type="submit" color="violet" size="3" disabled={isSubmitting}>
               {isSubmitting ? <><Spinner /> Creating…</> : 'Create User'}
             </Button>
           </Flex>

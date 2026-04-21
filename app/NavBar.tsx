@@ -14,12 +14,13 @@ const NavBar = () => {
     const role = (session?.user as any)?.role;
 
     return (
-        <nav className='border-b mb-5 px-5 py-3'>
+        <nav className='glass sticky top-0 z-50 mb-5 px-5 py-3'>
             <Container>
                 <Flex justify="between" align="center">
                     <Flex align="center" gap="6">
-                        <Link href='/'>
-                            <AiFillBug size="24" className='text-violet-600 hover:text-violet-700 transition-colors' />
+                        <Link href='/' className="flex items-center gap-2">
+                            <AiFillBug size="28" className='text-violet-600 hover:text-violet-700 transition-transform hover:scale-110 duration-200' />
+                            <Text size="4" weight="bold" className="tracking-tight hidden sm:inline-block">IssueTracker</Text>
                         </Link>
                         <NavLinks role={role} />
                     </Flex>
@@ -46,13 +47,13 @@ const NavLinks = ({ role }: { role?: string }) => {
 
 
     return (
-        <ul className='flex space-x-6'>
+        <ul className='flex space-x-8'>
             {links.map(link => (
                 <li key={link.href}>
                     <Link
                         className={classnames({
-                            'nav-link': true,
-                            '!text-zinc-900 font-semibold': link.href === currentPath,
+                            'nav-link text-sm': true,
+                            'active': link.href === currentPath,
                         })}
                         href={link.href}
                     >

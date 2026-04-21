@@ -15,7 +15,7 @@ const schema = z.object({
     name: z.string().min(1, 'Name is required.'),
     email: z.string().email('Invalid email.').min(1, 'Email is required.'),
     password: z.string().min(5, 'Password must be at least 5 characters.'),
-    role: z.enum(['ADMIN', 'MANAGER', 'DEVELOPER', 'QA', 'VIEWER']).default('DEVELOPER'),
+    role: z.enum(['ADMIN', 'MANAGER', 'DEVELOPER', 'QA', 'VIEWER']),
 });
 
 type RegisterForm = z.infer<typeof schema>;
@@ -35,7 +35,7 @@ const RegisterPage = () => {
         try {
             setSubmitting(true);
             await axios.post('/api/register', data);
-            
+
             // Automatically sign in the user after registration
             const result = await signIn('credentials', {
                 email: data.email,

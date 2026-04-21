@@ -36,32 +36,40 @@ export default async function Home() {
 
   return (
     <Box>
-      <Flex justify="between" align="end" mb="5">
+      <Flex justify="between" align="center" mb="6">
         <Box>
-           <Heading size="6">Hello, {userName} 👋</Heading>
-           <Text color="gray">Role: {role}</Text>
+           <Heading size="8" className="tracking-tight">Hello, {userName} 👋</Heading>
+           <Text color="gray" size="2" weight="medium">You are logged in as {role.toLowerCase()}.</Text>
         </Box>
-        {role === 'ADMIN' && <Button variant="soft">System Logs</Button>}
-        {role === 'MANAGER' && <Button color="green">New Project</Button>}
+        <Flex gap="3">
+          {role === 'ADMIN' && <Button variant="soft" size="2" color="gray">System Logs</Button>}
+          {role === 'MANAGER' && (
+            <Button color="violet" size="2" asChild>
+              <Link href="/projects">Manage Projects</Link>
+            </Button>
+          )}
+        </Flex>
       </Flex>
 
-      <Grid columns={{ initial: '1', md: '2' }} gap="5">
-        <Flex direction="column" gap="5">
-          <Card>
-             <Heading size="3" mb="3">Overview</Heading>
+      <Grid columns={{ initial: '1', md: '2' }} gap="6">
+        <Flex direction="column" gap="6">
+          <Card className="card-premium">
+             <Heading size="4" mb="4" className="tracking-tight">Issue Overview</Heading>
              <IssueSummary open={open} inProgress={inProgress} closed={closed} />
           </Card>
-          <Card>
-             <Heading size="3" mb="3">Analytics</Heading>
+          <Card className="card-premium">
+             <Heading size="4" mb="4" className="tracking-tight">Status Analytics</Heading>
              <IssueChart open={open} inProgress={inProgress} closed={closed} />
           </Card>
         </Flex>
         
         <Box>
-          <Heading size="3" mb="3">Recent Activity</Heading>
-          <LatestIssues />
+          <Heading size="4" mb="4" className="tracking-tight">Latest Issues</Heading>
+          <Card className="card-premium">
+            <LatestIssues />
+          </Card>
           {role === 'DEVELOPER' && (
-             <Button mt="4" className="w-full" variant="outline">View My Assigned Tasks</Button>
+             <Button mt="4" className="w-full" variant="outline" size="2">View My Assigned Tasks</Button>
           )}
         </Box>
       </Grid>

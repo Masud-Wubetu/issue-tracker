@@ -74,45 +74,48 @@ export default function ProjectsClient({ userRole }: { userRole: string }) {
           </Flex>
         </Card>
       ) : (
-        <Grid columns={{ initial: '1', sm: '2', lg: '3' }} gap="4">
+        <Grid columns={{ initial: '1', md: '2', xl: '3' }} gap="5">
           {projects.map(project => {
             const visibleMembers = project.members.slice(0, 4);
             const overflow = project.members.length - 4;
             return (
-              <Card key={project.id} className="hover:shadow-md transition-shadow">
-                <Flex direction="column" gap="3" p="1">
+              <Card key={project.id} className="card-premium">
+                <Flex direction="column" gap="4" p="2">
                   <Flex justify="between" align="start">
                     <Box style={{ flex: 1, minWidth: 0 }}>
-                      <Text as="p" size="4" weight="bold" className="truncate">{project.name}</Text>
-                      <Text as="p" size="2" color="gray" className="line-clamp-2 mt-1">
+                      <Text as="p" size="5" weight="bold" className="truncate tracking-tight">{project.name}</Text>
+                      <Text as="p" size="2" color="gray" className="line-clamp-2 mt-2 leading-relaxed">
                         {project.description || 'No description provided.'}
                       </Text>
                     </Box>
-                    <Badge color="violet" ml="2">{project._count.issues} issues</Badge>
                   </Flex>
 
-                  {/* Members */}
-                  <Flex align="center" gap="1">
-                    {visibleMembers.map(m => {
-                      const initials = (m.name || m.email || '?').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                      return <Avatar key={m.id} src={m.image ?? undefined} fallback={initials} size="1" radius="full" color="violet" />;
-                    })}
-                    {overflow > 0 && <Text size="1" color="gray" ml="1">+{overflow}</Text>}
-                    {project.members.length === 0 && <Text size="1" color="gray">No members assigned</Text>}
+                  <Flex align="center" justify="between" mt="auto">
+                    <Flex align="center" gap="1">
+                      {visibleMembers.map(m => {
+                        const initials = (m.name || m.email || '?').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                        return <Avatar key={m.id} src={m.image ?? undefined} fallback={initials} size="1" radius="full" color="violet" />;
+                      })}
+                      {overflow > 0 && <Text size="1" color="gray" ml="1" weight="medium">+{overflow}</Text>}
+                      {project.members.length === 0 && <Text size="1" color="gray" className="italic">Unassigned</Text>}
+                    </Flex>
+                    <Badge color="violet" variant="soft" radius="full" size="2">
+                      {project._count.issues} {project._count.issues === 1 ? 'issue' : 'issues'}
+                    </Badge>
                   </Flex>
 
-                  <Flex gap="2" mt="1">
-                    <Button size="1" variant="soft" color="violet" asChild>
-                      <Link href={`/projects/${project.id}`}><ExternalLinkIcon /> View</Link>
+                  <Flex gap="2" pt="2" className="border-t border-gray-100">
+                    <Button size="2" variant="surface" color="violet" asChild className="flex-1">
+                      <Link href={`/projects/${project.id}`}><ExternalLinkIcon /> View Details</Link>
                     </Button>
                     {canManage(userRole) && (
-                      <Button size="1" variant="soft" color="gray" onClick={() => setEditingProject(project)}>
-                        <Pencil1Icon /> Edit
+                      <Button size="2" variant="soft" color="gray" onClick={() => setEditingProject(project)}>
+                        <Pencil1Icon />
                       </Button>
                     )}
                     {userRole === 'ADMIN' && (
-                      <Button size="1" variant="soft" color="red" onClick={() => { setDeletingId(project.id); setDeleteError(''); }}>
-                        <TrashIcon /> Delete
+                      <Button size="2" variant="soft" color="red" onClick={() => { setDeletingId(project.id); setDeleteError(''); }}>
+                        <TrashIcon />
                       </Button>
                     )}
                   </Flex>
