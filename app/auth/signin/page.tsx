@@ -57,12 +57,12 @@ const SignInPage = () => {
         <Container size="1">
             <Flex direction="column" align="center" mt="9" gap="6">
                 {/* Logo */}
-                <Flex align="center" gap="2">
-                    <AiFillBug size="32" className="text-violet-600" />
-                    <Text size="5" weight="bold" className="text-zinc-800">IssueTracker</Text>
+                <Flex align="center" gap="3">
+                    <AiFillBug size="40" className="text-violet-600" />
+                    <Text size="7" weight="bold" className="tracking-tight">IssueTracker</Text>
                 </Flex>
 
-                <Card size="4" className="w-full">
+                <Card size="4" className="w-full card-premium">
                     <Heading size="5" mb="1">Welcome back</Heading>
                     <Text size="2" color="gray" as="p" mb="5">
                         Sign in to your account to continue.

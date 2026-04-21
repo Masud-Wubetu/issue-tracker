@@ -14,37 +14,33 @@ const LatestIssues = async () => {
   });
 
   return (
-    <Card>
-      <Heading size="4" mb="5">Latest Issues</Heading>
-      <Table.Root>
-        <Table.Body>
-          {issues.map((issue) => (
-            <Table.Row key={issue.id}>
-              <Table.Cell>
-                <Flex justify="between">
-                  <Flex direction="column" align="start" gap="2">
-                    <Link href={`/issues/${issue.id}`} className='hover:underline font-medium'>
-                      {issue.title}
-                    </Link>
-                    <IssueStatusBadge status={issue.status} />
-                  </Flex>
-                  {issue.assignee && (
-                    <Avatar
-                      src={(issue.assignee as any).image}
-                      fallback="?"
-                      size="2"
-                      radius="full"
-                    />
-                  )}
-
-
+    <Table.Root>
+      <Table.Body>
+        {issues.map((issue) => (
+          <Table.Row key={issue.id}>
+            <Table.Cell className="py-4">
+              <Flex justify="between" align="center">
+                <Flex direction="column" align="start" gap="2">
+                  <Link href={`/issues/${issue.id}`} className='text-lg hover:text-accent-primary font-bold transition-colors'>
+                    {issue.title}
+                  </Link>
+                  <IssueStatusBadge status={issue.status} />
                 </Flex>
-              </Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table.Root>
-    </Card>
+                {issue.assignee && (
+                  <Avatar
+                    src={(issue.assignee as any).image}
+                    fallback="?"
+                    size="2"
+                    radius="full"
+                    color="violet"
+                  />
+                )}
+              </Flex>
+            </Table.Cell>
+          </Table.Row>
+        ))}
+      </Table.Body>
+    </Table.Root>
   );
 };
 

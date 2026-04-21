@@ -59,7 +59,7 @@ const RegisterPage = () => {
     return (
         <Container size="1">
             <Box mt="9">
-                <Card size="4">
+                <Card size="4" className="card-premium">
                     <Heading mb="4">Create an Account</Heading>
                     {error && (
                         <Callout.Root color="red" mb="4">

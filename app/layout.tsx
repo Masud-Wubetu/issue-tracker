@@ -9,6 +9,7 @@ import NavBar from './NavBar'
 const inter = Inter({ 
   subsets: ['latin'],
   variable: "--font-inter",
+  weight: ['400', '500', '600', '700'],
 })
 
 export const metadata: Metadata = {
@@ -30,16 +31,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.variable}>
+      <body className={inter.className}>
         <QueryClientProvider>
           <AuthProvider>
             <ThemeProviders>
-              <Theme accentColor="violet">
-                <NavBar />
-                <main className='p-5'>
-                  <Container>{children}</Container>
-                </main>
-              </Theme>
+              <NavBar />
+              <main className='p-8 md:p-12'>
+                <Container size="4">{children}</Container>
+              </main>
             </ThemeProviders>
           </AuthProvider>
         </QueryClientProvider>

@@ -18,10 +18,10 @@ const NavBar = () => {
         <nav className='glass sticky top-0 z-50 mb-5 px-5 py-3'>
             <Container>
                 <Flex justify="between" align="center">
-                    <Flex align="center" gap="6">
-                        <Link href='/' className="flex items-center gap-2">
-                            <AiFillBug size="28" className='text-violet-600 hover:text-violet-700 transition-transform hover:scale-110 duration-200' />
-                            <Text size="4" weight="bold" className="tracking-tight hidden sm:inline-block">IssueTracker</Text>
+                    <Flex align="center" gap="8">
+                        <Link href='/' className="flex items-center gap-3">
+                            <AiFillBug size="36" className='text-violet-600 hover:text-violet-700 transition-transform hover:scale-110 duration-300' />
+                            <Text size="6" weight="bold" className="tracking-tighter hidden sm:inline-block">IssueTracker</Text>
                         </Link>
                         <NavLinks role={role} />
                     </Flex>

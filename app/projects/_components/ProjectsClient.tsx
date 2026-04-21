@@ -52,14 +52,14 @@ export default function ProjectsClient({ userRole }: { userRole: string }) {
 
   return (
     <Box>
-      <Flex justify="between" align="center" mb="6">
+      <Flex justify="between" align="center" mb="9">
         <Box>
-          <Heading size="7">Projects</Heading>
-          <Text color="gray" size="2">Manage projects and assign team members.</Text>
+          <Text className="text-hero block mb-1">Projects</Text>
+          <Text color="gray" size="4" weight="medium">Organize your workspace and manage team access.</Text>
         </Box>
         {canManage(userRole) && (
           <Button color="violet" size="3" onClick={() => setCreateOpen(true)}>
-            <PlusIcon /> New Project
+            <PlusIcon width="18" height="18" /> New Project
           </Button>
         )}
       </Flex>
@@ -67,39 +67,37 @@ export default function ProjectsClient({ userRole }: { userRole: string }) {
       {loading ? (
         <Text color="gray">Loading projects…</Text>
       ) : projects.length === 0 ? (
-        <Card>
-          <Flex direction="column" align="center" gap="3" p="8">
-            <PersonIcon width={40} height={40} className="text-gray-300" />
-            <Text color="gray">No projects yet. {canManage(userRole) && 'Create your first one!'}</Text>
+        <Card className="card-premium">
+          <Flex direction="column" align="center" gap="4" p="9">
+            <PersonIcon width={60} height={60} className="text-gray-300" />
+            <Text color="gray" size="4">No projects yet. {canManage(userRole) && 'Create your first one!'}</Text>
           </Flex>
         </Card>
       ) : (
-        <Grid columns={{ initial: '1', md: '2', xl: '3' }} gap="5">
+        <Grid columns={{ initial: '1', md: '2', xl: '3' }} gap="8">
           {projects.map(project => {
             const visibleMembers = project.members.slice(0, 4);
             const overflow = project.members.length - 4;
             return (
               <Card key={project.id} className="card-premium">
-                <Flex direction="column" gap="4" p="2">
-                  <Flex justify="between" align="start">
-                    <Box style={{ flex: 1, minWidth: 0 }}>
-                      <Text as="p" size="5" weight="bold" className="truncate tracking-tight">{project.name}</Text>
-                      <Text as="p" size="2" color="gray" className="line-clamp-2 mt-2 leading-relaxed">
-                        {project.description || 'No description provided.'}
-                      </Text>
-                    </Box>
-                  </Flex>
+                <Flex direction="column" gap="5">
+                  <Box>
+                    <Text as="p" size="6" weight="bold" className="truncate tracking-tight mb-2">{project.name}</Text>
+                    <Text as="p" size="3" color="gray" className="line-clamp-2 leading-relaxed">
+                      {project.description || 'No description provided.'}
+                    </Text>
+                  </Box>
 
                   <Flex align="center" justify="between" mt="auto">
                     <Flex align="center" gap="1">
                       {visibleMembers.map(m => {
                         const initials = (m.name || m.email || '?').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                        return <Avatar key={m.id} src={m.image ?? undefined} fallback={initials} size="1" radius="full" color="violet" />;
+                        return <Avatar key={m.id} src={m.image ?? undefined} fallback={initials} size="2" radius="full" color="violet" />;
                       })}
-                      {overflow > 0 && <Text size="1" color="gray" ml="1" weight="medium">+{overflow}</Text>}
-                      {project.members.length === 0 && <Text size="1" color="gray" className="italic">Unassigned</Text>}
+                      {overflow > 0 && <Text size="2" color="gray" ml="2" weight="medium">+{overflow}</Text>}
+                      {project.members.length === 0 && <Text size="2" color="gray" className="italic">Unassigned</Text>}
                     </Flex>
-                    <Badge color="violet" variant="soft" radius="full" size="2">
+                    <Badge color="violet" variant="soft" radius="full" size="3">
                       {project._count.issues} {project._count.issues === 1 ? 'issue' : 'issues'}
                     </Badge>
                   </Flex>
