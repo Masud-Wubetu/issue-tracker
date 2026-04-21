@@ -13,7 +13,7 @@ const NavBar = () => {
     return (
         <nav className='border-b mb-5 px-5 py-3'>
             <Container>
-                <Flex justify="between">
+                <Flex justify="between" align="center">
                     <Flex align="center" gap="6">
                         <Link href='/'>
                             <AiFillBug size="24" className='text-violet-600 hover:text-violet-700 transition-colors' />
@@ -32,8 +32,8 @@ const NavLinks = () => {
 
     const links = [
         { label: 'Dashboard', href: '/' },
-        { label: 'Issues', href: '/issues' }
-    ]
+        { label: 'Issues', href: '/issues' },
+    ];
 
     return (
         <ul className='flex space-x-6'>
@@ -42,7 +42,7 @@ const NavLinks = () => {
                     <Link
                         className={classnames({
                             'nav-link': true,
-                            '!text-zinc-900 font-medium': link.href === currentPath,
+                            '!text-zinc-900 font-semibold': link.href === currentPath,
                         })}
                         href={link.href}
                     >
@@ -57,33 +57,75 @@ const NavLinks = () => {
 const AuthStatus = () => {
     const { status, data: session } = useSession();
 
-    if (status === 'loading') return <Skeleton width="3rem" height="1.8rem" />;
+    if (status === 'loading') return <Skeleton width="2rem" height="2rem" />;
 
     if (status === 'unauthenticated')
         return (
-            <Flex gap="3">
-                <Link className='nav-link' href='/api/auth/signin'>Login</Link>
-                <Link className='nav-link font-medium text-violet-600' href='/auth/register'>Register</Link>
+            <Flex gap="3" align="center">
+                <Link
+                    className='nav-link text-sm'
+                    href='/auth/signin'
+                >
+                    Login
+                </Link>
+                <Link
+                    className='text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 transition-colors px-4 py-1.5 rounded-full'
+                    href='/auth/register'
+                >
+                    Register
+                </Link>
             </Flex>
         );
+
+    const userName = session!.user!.name || session!.user!.email || 'User';
+    const initials = userName
+        .split(' ')
+        .map((n: string) => n[0])
+        .join('')
+        .substring(0, 2)
+        .toUpperCase();
 
     return (
         <Box>
             <DropdownMenu.Root>
                 <DropdownMenu.Trigger>
-                    <Avatar
-                        src={session!.user!.image!}
-                        fallback="?"
-                        size="2"
-                        radius="full"
-                        className='cursor-pointer hover:opacity-80 transition-opacity'
-                    />
+                    <button
+                        className='rounded-full focus:outline-none focus:ring-2 focus:ring-violet-400 focus:ring-offset-2'
+                        aria-label="Open user menu"
+                    >
+                        <Avatar
+                            src={session!.user!.image ?? undefined}
+                            fallback={initials}
+                            size="2"
+                            radius="full"
+                            className='cursor-pointer hover:opacity-80 transition-opacity'
+                            color="violet"
+                        />
+                    </button>
                 </DropdownMenu.Trigger>
-                <DropdownMenu.Content variant='soft' size="2">
-                    <DropdownMenu.Label>
-                        <Text size="2">{session!.user!.email}</Text>
-                    </DropdownMenu.Label>
-                    <DropdownMenu.Item onClick={() => signOut()}>Logout</DropdownMenu.Item>
+                <DropdownMenu.Content variant='soft' size="2" align="end" sideOffset={8}>
+                    {/* User info header */}
+                    <div className="px-2 py-1.5 min-w-[180px]">
+                        {session!.user!.name && (
+                            <Text as="p" size="2" weight="bold">
+                                {session!.user!.name}
+                            </Text>
+                        )}
+                        <Text as="p" size="1" color="gray">
+                            {session!.user!.email}
+                        </Text>
+                    </div>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item asChild>
+                        <Link href="/issues">My Issues</Link>
+                    </DropdownMenu.Item>
+                    <DropdownMenu.Separator />
+                    <DropdownMenu.Item
+                        color="red"
+                        onClick={() => signOut({ callbackUrl: '/auth/signin' })}
+                    >
+                        Log out
+                    </DropdownMenu.Item>
                 </DropdownMenu.Content>
             </DropdownMenu.Root>
         </Box>
