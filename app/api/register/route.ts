@@ -7,6 +7,7 @@ const schema = z.object({
   email: z.string().email(),
   password: z.string().min(5),
   name: z.string().min(1),
+  role: z.enum(['ADMIN', 'MANAGER', 'DEVELOPER', 'QA', 'VIEWER']).optional()
 });
 
 export async function POST(request: NextRequest) {
@@ -34,8 +35,10 @@ export async function POST(request: NextRequest) {
       email: body.email,
       name: body.name,
       password: hashedPassword,
+      role: body.role || 'DEVELOPER'
     },
   });
+
 
   return NextResponse.json({ email: newUser.email });
 }

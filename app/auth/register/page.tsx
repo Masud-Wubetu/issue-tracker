@@ -1,35 +1,37 @@
 'use client';
 
-import { Box, Button, Callout, Card, Container, Flex, Heading, Text, TextField } from '@radix-ui/themes';
+import { Box, Button, Callout, Card, Container, Flex, Heading, Text, TextField, Select } from '@radix-ui/themes';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { ErrorMessage, Spinner } from '@/app/component';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
 
-
 const schema = z.object({
     name: z.string().min(1, 'Name is required.'),
     email: z.string().email('Invalid email.').min(1, 'Email is required.'),
     password: z.string().min(5, 'Password must be at least 5 characters.'),
+    role: z.enum(['ADMIN', 'MANAGER', 'DEVELOPER', 'QA', 'VIEWER']).default('DEVELOPER'),
 });
 
 type RegisterForm = z.infer<typeof schema>;
 
 const RegisterPage = () => {
     const router = useRouter();
-    const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>({
-        resolver: zodResolver(schema)
+    const { register, handleSubmit, control, formState: { errors } } = useForm<RegisterForm>({
+        resolver: zodResolver(schema),
+        defaultValues: {
+            role: 'DEVELOPER'
+        }
     });
     const [error, setError] = useState('');
     const [isSubmitting, setSubmitting] = useState(false);
 
     const onSubmit = handleSubmit(async (data) => {
-
         try {
             setSubmitting(true);
             await axios.post('/api/register', data);
@@ -54,7 +56,6 @@ const RegisterPage = () => {
         }
     });
 
-
     return (
         <Container size="1">
             <Box mt="9">
@@ -76,6 +77,26 @@ const RegisterPage = () => {
                                 <Text as="div" size="2" mb="1" weight="bold">Email</Text>
                                 <TextField.Root placeholder="Email address" {...register('email')} />
                                 <ErrorMessage>{errors.email?.message}</ErrorMessage>
+                            </Box>
+                            <Box>
+                                <Text as="div" size="2" mb="1" weight="bold">Role</Text>
+                                <Controller
+                                    name="role"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Select.Root onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select.Trigger placeholder="Select Role..." className="w-full" />
+                                            <Select.Content>
+                                                <Select.Item value="ADMIN">Admin</Select.Item>
+                                                <Select.Item value="MANAGER">Project Manager</Select.Item>
+                                                <Select.Item value="DEVELOPER">Developer</Select.Item>
+                                                <Select.Item value="QA">Tester/QA</Select.Item>
+                                                <Select.Item value="VIEWER">Viewer/Client</Select.Item>
+                                            </Select.Content>
+                                        </Select.Root>
+                                    )}
+                                />
+                                <ErrorMessage>{errors.role?.message}</ErrorMessage>
                             </Box>
                             <Box>
                                 <Text as="div" size="2" mb="1" weight="bold">Password</Text>
@@ -100,4 +121,3 @@ const RegisterPage = () => {
 }
 
 export default RegisterPage;
-

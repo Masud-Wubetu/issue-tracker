@@ -18,12 +18,18 @@ export async function POST(request: NextRequest) {
     if (session) {
         reporterId = (session.user as any).id;
     } else {
-        const visitor = await prisma.user.findUnique({
-            where: { email: 'visitor@issuetracker.com' }
+        const visitor = await prisma.user.upsert({
+            where: { email: 'visitor@issuetracker.com' },
+            update: {},
+            create: { 
+                email: 'visitor@issuetracker.com', 
+                name: 'Visitor', 
+                role: 'VIEWER' 
+            }
         });
-        if (!visitor) return NextResponse.json({ error: 'Visitor account not found' }, { status: 500 });
         reporterId = visitor.id;
     }
+
 
     const body = await request.json();
 
@@ -33,9 +39,13 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(validation.error.format(), { status: 400 });
 
     // For now, we take the first project. In a real app, this would come from the body or URL.
-    const project = await prisma.project.findFirst();
-    if (!project)
-        return NextResponse.json({ error: 'No project found' }, { status: 404 });
+    let project = await prisma.project.findFirst();
+    if (!project) {
+        project = await prisma.project.create({
+            data: { name: 'Default Project', description: 'Internal Project' }
+        });
+    }
+
 
     const newIssue = await prisma.issue.create({
         data: {
