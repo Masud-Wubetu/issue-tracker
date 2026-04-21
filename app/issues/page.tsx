@@ -27,10 +27,11 @@ const IssuesPage = async ({ searchParams }: Props) => {
 
   const columns: { 
     label: string; 
-    value: keyof Issue; 
+    value: keyof Issue | 'project'; 
     className?: string 
   }[] = [
     { label: 'Issue', value: 'title' },
+    { label: 'Project', value: 'project', className: 'hidden md:table-cell' },
     { label: 'Type', value: 'type', className: 'hidden md:table-cell' },
     { label: 'Priority', value: 'priority', className: 'hidden md:table-cell' },
     { label: 'Status', value: 'status', className: 'hidden md:table-cell' },
@@ -48,7 +49,8 @@ const IssuesPage = async ({ searchParams }: Props) => {
 
   const issues = await prisma.issue.findMany({
     where,
-    orderBy: orderByField,
+    include: { project: true },
+    orderBy: orderByField as any,
     skip: (currentPage - 1) * pageSize,
     take: pageSize,
   });
@@ -63,11 +65,15 @@ const IssuesPage = async ({ searchParams }: Props) => {
           <Table.Row>
             {columns.map(column => (
               <Table.ColumnHeaderCell key={column.value} className={column.className}>
-                <NextLink href={{
-                  query: { ...resolvedSearchParams, orderBy: column.value }
-                }}>
-                  {column.label}
-                </NextLink>
+                {column.value !== 'project' ? (
+                  <NextLink href={{
+                    query: { ...resolvedSearchParams, orderBy: column.value }
+                  }}>
+                    {column.label}
+                  </NextLink>
+                ) : (
+                  column.label
+                )}
                 {column.value === orderBy && <ArrowUpIcon className='inline' />}
               </Table.ColumnHeaderCell>
             ))}
@@ -81,10 +87,14 @@ const IssuesPage = async ({ searchParams }: Props) => {
                 <Link href={`/issues/${issue.id}`}>
                   {issue.title}
                 </Link>
-                <div className='flex md:hidden gap-2 mt-1'>
+                <div className='flex md:hidden flex-wrap gap-2 mt-1'>
+                  <span className="text-xs text-gray-500">{issue.project.name}</span>
                   <IssueTypeBadge type={issue.type} />
                   <IssueStatusBadge status={issue.status} />
                 </div>
+              </Table.Cell>
+              <Table.Cell className='hidden md:table-cell'>
+                <Text size="2">{issue.project.name}</Text>
               </Table.Cell>
               <Table.Cell className='hidden md:table-cell'>
                 <IssueTypeBadge type={issue.type} />
@@ -108,6 +118,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
     </Flex>
   )
 }
+
 
 export const dynamic = 'force-dynamic';
 

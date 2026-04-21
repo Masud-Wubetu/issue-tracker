@@ -1,16 +1,13 @@
-import IssueStatusBadge from '@/app/component/IssueStatusBadge';
-import IssuePriorityBadge from '@/app/component/IssuePriorityBadge';
-import IssueTypeBadge from '@/app/component/IssueTypeBadge';
 import { prisma } from '@/prisma/client';
-import { Box, Card, Flex, Grid, Heading, Text } from '@radix-ui/themes';
+import { Box, Flex, Grid } from '@radix-ui/themes';
 import { notFound } from 'next/navigation';
-import ReactMarkdown from 'react-markdown';
 import EditIssueButton from './EditIssueButton';
 import IssueDetails from './IssueDetails';
 import DeleteIssueButton from './DeleteIssueButton';
 import { getServerSession } from 'next-auth';
 import authOptions from '@/app/auth/authOptions';
 import AssigneeSelect from './AssigneeSelect';
+import AttachmentSection from './AttachmentSection';
 
 interface Props { 
     params: { id: string }
@@ -27,7 +24,12 @@ const IssueDetailpage = async ({ params }: Props) => {
     const { id } = await params;
 
     const issue = await prisma.issue.findUnique({
-        where: { id: parseInt(id) }
+        where: { id: parseInt(id) },
+        include: {
+            project: true,
+            reporter: true,
+            attachments: true,
+        }
     });
 
     if (!issue) notFound();
@@ -36,6 +38,7 @@ const IssueDetailpage = async ({ params }: Props) => {
         <Grid columns={{ initial: '1', sm: '5' }} gap="5">
           <Box className='md:col-span-4'>
             <IssueDetails issue={issue} />
+            <AttachmentSection issueId={issue.id} attachments={issue.attachments} />
           </Box>
           {session && (
             <Box>
