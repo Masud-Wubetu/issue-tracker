@@ -19,6 +19,73 @@ model Issue {
   type        IssueType @default(BUG)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  
+  project     Project  @relation(fields: [projectId], references: [id])
+  projectId   Int
+  
+  assignee    User?    @relation("AssignedIssues", fields: [assigneeId], references: [id])
+  assigneeId  String?
+  
+  reporter    User     @relation("ReportedIssues", fields: [reporterId], references: [id])
+  reporterId  String
+
+  comments    Comment[]
+  activities  ActivityLog[]
+}
+
+model Project {
+  id          Int      @id @default(autoincrement())
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  members     User[]
+  issues      Issue[]
+}
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  password       String?
+  role           Role      @default(DEVELOPER)
+  image          String?
+  createdAt      DateTime  @default(now())
+  
+  projects       Project[]
+  assignedIssues Issue[]   @relation("AssignedIssues")
+  reportedIssues Issue[]   @relation("ReportedIssues")
+  comments       Comment[]
+  activities     ActivityLog[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  issue     Issue    @relation(fields: [issueId], references: [id])
+  issueId   Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+}
+
+model ActivityLog {
+  id        Int      @id @default(autoincrement())
+  action    String
+  issue     Issue    @relation(fields: [issueId], references: [id])
+  issueId   Int
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  timestamp DateTime @default(now())
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  DEVELOPER
+  QA
+  VIEWER
 }
 
 enum Status {
@@ -42,3 +109,4 @@ enum IssueType {
   TASK
   IMPROVEMENT
 }
+

@@ -1,29 +1,75 @@
 
 import React from 'react'
-import { Table } from '@radix-ui/themes'
+import { Table, Flex } from '@radix-ui/themes'
 import Link from '@/app/component/Link'
+import NextLink from 'next/link';
 import { prisma } from '@/prisma/client'
-import IssueStatusBadge from '../component/IssueStatusBadge'
-import IssuePriorityBadge from '../component/IssuePriorityBadge'
-import IssueTypeBadge from '../component/IssueTypeBadge'
+import { IssueStatusBadge, IssuePriorityBadge, IssueTypeBadge, Pagination } from '../component'
 import IssueActions from './IssueActions'
+import { Status, Issue } from '@prisma/client'
+import { ArrowUpIcon } from '@radix-ui/react-icons';
 
-const IssuesPage = async () => {
+interface Props {
+  searchParams: { 
+    status: Status, 
+    orderBy: keyof Issue,
+    page: string 
+  }
+}
+
+const IssuesPage = async ({ searchParams }: Props) => {
+  const { status, orderBy, page } = await searchParams;
+
+  const statuses = Object.values(Status);
+  const filterStatus = statuses.includes(status) ? status : undefined;
+  const where = { status: filterStatus };
+
+  const columns: { 
+    label: string; 
+    value: keyof Issue; 
+    className?: string 
+  }[] = [
+    { label: 'Issue', value: 'title' },
+    { label: 'Type', value: 'type', className: 'hidden md:table-cell' },
+    { label: 'Priority', value: 'priority', className: 'hidden md:table-cell' },
+    { label: 'Status', value: 'status', className: 'hidden md:table-cell' },
+    { label: 'Created', value: 'createdAt', className: 'hidden md:table-cell' },
+  ];
+
+  const orderByField = columns
+    .map(column => column.value)
+    .includes(orderBy)
+    ? { [orderBy]: 'asc' }
+    : undefined;
+
+  const currentPage = parseInt(page) || 1;
+  const pageSize = 10;
+
   const issues = await prisma.issue.findMany({
-    orderBy: { createdAt: 'desc' }
+    where,
+    orderBy: orderByField,
+    skip: (currentPage - 1) * pageSize,
+    take: pageSize,
   });
 
+  const issueCount = await prisma.issue.count({ where });
+
   return (
-    <div>
-      <IssueActions/>
+    <Flex direction="column" gap="3">
+      <IssueActions />
       <Table.Root variant='surface'>
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeaderCell>Issue</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='hidden md:table-cell'>Type</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='hidden md:table-cell'>Priority</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='hidden md:table-cell'>Status</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='hidden md:table-cell'>Created</Table.ColumnHeaderCell>
+            {columns.map(column => (
+              <Table.ColumnHeaderCell key={column.value} className={column.className}>
+                <NextLink href={{
+                  query: { ...searchParams, orderBy: column.value }
+                }}>
+                  {column.label}
+                </NextLink>
+                {column.value === orderBy && <ArrowUpIcon className='inline' />}
+              </Table.ColumnHeaderCell>
+            ))}
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -34,26 +80,33 @@ const IssuesPage = async () => {
                   {issue.title}
                 </Link>
                 <div className='flex md:hidden gap-2 mt-1'>
-                  <IssueTypeBadge type={issue.type}/>
-                  <IssueStatusBadge status={issue.status}/>
+                  <IssueTypeBadge type={issue.type} />
+                  <IssueStatusBadge status={issue.status} />
                 </div>
               </Table.Cell>
               <Table.Cell className='hidden md:table-cell'>
-                <IssueTypeBadge type={issue.type}/>
+                <IssueTypeBadge type={issue.type} />
               </Table.Cell>
               <Table.Cell className='hidden md:table-cell'>
-                <IssuePriorityBadge priority={issue.priority}/>
+                <IssuePriorityBadge priority={issue.priority} />
               </Table.Cell>
               <Table.Cell className='hidden md:table-cell'>
-                <IssueStatusBadge status={issue.status}/>
+                <IssueStatusBadge status={issue.status} />
               </Table.Cell>
               <Table.Cell className='hidden md:table-cell'>{issue.createdAt.toDateString()}</Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
       </Table.Root>
-    </div>
+      <Pagination 
+        pageSize={pageSize}
+        currentPage={currentPage}
+        itemCount={issueCount}
+      />
+    </Flex>
   )
 }
+
+export const dynamic = 'force-dynamic';
 
 export default IssuesPage

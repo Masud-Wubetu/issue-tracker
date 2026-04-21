@@ -2,16 +2,22 @@ import IssueStatusBadge from '@/app/component/IssueStatusBadge';
 import IssuePriorityBadge from '@/app/component/IssuePriorityBadge';
 import IssueTypeBadge from '@/app/component/IssueTypeBadge';
 import { prisma } from '@/prisma/client';
-import { Card, Flex, Heading, Text } from '@radix-ui/themes';
+import { Box, Card, Flex, Grid, Heading, Text } from '@radix-ui/themes';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
-
+import EditIssueButton from './EditIssueButton';
+import IssueDetails from './IssueDetails';
+import DeleteIssueButton from './DeleteIssueButton';
+import { getServerSession } from 'next-auth';
+import authOptions from '@/app/auth/authOptions';
+import AssigneeSelect from './AssigneeSelect';
 
 interface Props { 
     params: { id: string }
 }
 
 const IssueDetailpage = async ({ params }: Props) => {
+    const session = await getServerSession(authOptions);
     const { id } = await params;
 
     const issue = await prisma.issue.findUnique({
@@ -21,18 +27,20 @@ const IssueDetailpage = async ({ params }: Props) => {
     if (!issue) notFound();
 
     return (
-        <div>
-            <Heading>{issue.title}</Heading>
-            <Flex className='gap-3' my='5' align="center">
-                <IssueTypeBadge type={issue.type} />
-                <IssueStatusBadge status={issue.status} />
-                <IssuePriorityBadge priority={issue.priority} />
-                <Text size="2" color="gray">{issue.createdAt.toDateString()}</Text>
-            </Flex>
-            <Card className='prose !max-w-2xl' mt='4'>
-                <ReactMarkdown>{issue.description}</ReactMarkdown>
-            </Card>
-        </div>
+        <Grid columns={{ initial: '1', sm: '5' }} gap="5">
+          <Box className='md:col-span-4'>
+            <IssueDetails issue={issue} />
+          </Box>
+          {session && (
+            <Box>
+              <Flex direction="column" gap="4">
+                <AssigneeSelect issue={issue} />
+                <EditIssueButton issueId={issue.id} />
+                <DeleteIssueButton issueId={issue.id} />
+              </Flex>
+            </Box>
+          )}
+        </Grid>
     )
 }
 
