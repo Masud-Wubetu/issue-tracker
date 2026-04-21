@@ -18,7 +18,8 @@ interface Props {
 }
 
 const IssuesPage = async ({ searchParams }: Props) => {
-  const { status, orderBy, page } = await searchParams;
+  const resolvedSearchParams = await searchParams;
+  const { status, orderBy, page } = resolvedSearchParams;
 
   const statuses = Object.values(Status);
   const filterStatus = statuses.includes(status) ? status : undefined;
@@ -63,7 +64,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
             {columns.map(column => (
               <Table.ColumnHeaderCell key={column.value} className={column.className}>
                 <NextLink href={{
-                  query: { ...searchParams, orderBy: column.value }
+                  query: { ...resolvedSearchParams, orderBy: column.value }
                 }}>
                   {column.label}
                 </NextLink>
@@ -72,6 +73,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
             ))}
           </Table.Row>
         </Table.Header>
+
         <Table.Body>
           {issues.map(issue => (
             <Table.Row key={issue.id}>
