@@ -6,24 +6,47 @@ import NextLink from 'next/link';
 import { prisma } from '@/prisma/client'
 import { IssueStatusBadge, IssuePriorityBadge, IssueTypeBadge, Pagination } from '../component'
 import IssueActions from './IssueActions'
-import { Status, Issue } from '@prisma/client'
-import { ArrowUpIcon } from '@radix-ui/react-icons';
+import { Status, Issue, Priority } from '@prisma/client'
+import { ArrowUpIcon, ArrowDownIcon } from '@radix-ui/react-icons';
 
 interface Props {
-  searchParams: { 
-    status: Status, 
-    orderBy: keyof Issue,
-    page: string 
-  }
+  searchParams: Promise<{ 
+    status?: Status; 
+    priority?: Priority;
+    assigneeId?: string;
+    projectId?: string;
+    search?: string;
+    startDate?: string;
+    endDate?: string;
+    orderBy?: keyof Issue;
+    sortOrder?: 'asc' | 'desc';
+    page?: string;
+  }>
 }
 
 const IssuesPage = async ({ searchParams }: Props) => {
   const resolvedSearchParams = await searchParams;
-  const { status, orderBy, page } = resolvedSearchParams;
+  const { 
+    status, priority, assigneeId, projectId, search, 
+    startDate, endDate, orderBy, sortOrder, page 
+  } = resolvedSearchParams;
 
-  const statuses = Object.values(Status);
-  const filterStatus = statuses.includes(status) ? status : undefined;
-  const where = { status: filterStatus };
+  const where = {
+    status: status || undefined,
+    priority: priority || undefined,
+    assigneeId: assigneeId || undefined,
+    projectId: projectId ? parseInt(projectId) : undefined,
+    AND: [
+        search ? {
+            OR: [
+                { title: { contains: search } },
+                { description: { contains: search } }
+            ]
+        } : {},
+        startDate ? { createdAt: { gte: new Date(startDate) } } : {},
+        endDate ? { createdAt: { lte: new Date(endDate) } } : {},
+    ]
+  };
 
   const columns: { 
     label: string; 
@@ -39,44 +62,56 @@ const IssuesPage = async ({ searchParams }: Props) => {
     { label: '', value: 'actions' },
   ];
 
-  const orderByField = columns
-    .map(column => column.value)
+  const validOrderBy = columns
+    .map(c => c.value)
     .filter(v => v !== 'project' && v !== 'actions')
-    .includes(orderBy)
-    ? { [orderBy]: 'asc' }
-    : undefined;
+    .includes(orderBy as any) ? orderBy : 'createdAt';
 
-  const currentPage = parseInt(page) || 1;
+  const finalSortOrder = sortOrder || (validOrderBy === 'createdAt' ? 'desc' : 'asc');
+
+  const currentPage = parseInt(page || '1');
   const pageSize = 10;
 
   const issues = await prisma.issue.findMany({
     where,
     include: { project: true },
-    orderBy: orderByField as any,
+    orderBy: { [validOrderBy as any]: finalSortOrder },
     skip: (currentPage - 1) * pageSize,
     take: pageSize,
   });
 
   const issueCount = await prisma.issue.count({ where });
 
+  const [projects, users] = await Promise.all([
+    prisma.project.findMany({ select: { id: true, name: true } }),
+    prisma.user.findMany({ select: { id: true, name: true } })
+  ]);
+
   return (
     <Flex direction="column" gap="3">
-      <IssueActions />
+      <IssueActions projects={projects} users={users} />
       <Table.Root variant='surface'>
+
         <Table.Header>
           <Table.Row>
             {columns.map(column => (
               <Table.ColumnHeaderCell key={column.value} className={column.className}>
                 {column.value !== 'project' && column.value !== 'actions' ? (
                   <NextLink href={{
-                    query: { ...resolvedSearchParams, orderBy: column.value }
+                    query: { 
+                        ...resolvedSearchParams, 
+                        orderBy: column.value,
+                        sortOrder: orderBy === column.value && sortOrder === 'asc' ? 'desc' : 'asc'
+                    }
                   }}>
                     {column.label}
+                    {column.value === orderBy && (
+                        sortOrder === 'asc' ? <ArrowUpIcon className='inline ml-1' /> : <ArrowDownIcon className='inline ml-1' />
+                    )}
                   </NextLink>
                 ) : (
                   column.label
                 )}
-                {column.value === orderBy && <ArrowUpIcon className='inline' />}
               </Table.ColumnHeaderCell>
             ))}
           </Table.Row>
