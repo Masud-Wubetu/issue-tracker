@@ -5,7 +5,7 @@ import axios from 'axios';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +19,7 @@ const schema = z.object({
 
 type SignInForm = z.infer<typeof schema>;
 
-const SignInPage = () => {
+const SignInFormContent = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get('callbackUrl') || '/';
@@ -126,6 +126,14 @@ const SignInPage = () => {
                 </Card>
             </Flex>
         </Container>
+    );
+};
+
+const SignInPage = () => {
+    return (
+        <Suspense fallback={<Flex align="center" justify="center" mt="9"><Spinner /></Flex>}>
+            <SignInFormContent />
+        </Suspense>
     );
 };
 

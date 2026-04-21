@@ -7,7 +7,7 @@ import axios from 'axios';
 import { Spinner } from '@/app/component';
 import Image from 'next/image';
 
-type Attachment = { id: number; filename: string; url: string; size: number | null; mimeType: string | null; uploadedAt: string };
+type Attachment = { id: number; filename: string; url: string; size: number | null; mimeType: string | null; uploadedAt: string | Date };
 
 interface Props { issueId: number; attachments: Attachment[] }
 

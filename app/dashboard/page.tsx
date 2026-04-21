@@ -113,7 +113,7 @@ export default async function UserDashboard({ searchParams }: Props) {
           </Flex>
           <Card>
             {assignedIssues.length === 0 ? (
-                <Text color="gray" p="4" align="center">No issues matching filters.</Text>
+                <Text color="gray" className="p-4 block text-center">No issues matching filters.</Text>
             ) : (
                 <Table.Root>
                 <Table.Header>
@@ -158,7 +158,7 @@ export default async function UserDashboard({ searchParams }: Props) {
           <Card>
             <Flex direction="column" gap="4">
               {activityLogs.length === 0 ? (
-                <Text color="gray" p="4" align="center">No recent activity.</Text>
+                <Text color="gray" className="p-4 block text-center">No recent activity.</Text>
               ) : (
                 activityLogs.map(log => (
                   <Flex key={log.id} gap="3" align="start">
