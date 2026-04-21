@@ -37,9 +37,11 @@ const NavLinks = ({ role }: { role?: string }) => {
         { label: 'Dashboard', href: '/dashboard' },
         { label: 'Issues', href: '/issues' },
         ...(role ? [{ label: 'Projects', href: '/projects' }] : []),
+        ...(role === 'ADMIN' || role === 'MANAGER' ? [{ label: 'Reports', href: '/reports' }] : []),
         ...(role === 'ADMIN' || role === 'MANAGER' ? [{ label: 'Audit Trail', href: '/activities' }] : []),
         ...(role === 'ADMIN' ? [{ label: 'Users', href: '/admin/users' }] : []),
     ];
+
 
 
 
