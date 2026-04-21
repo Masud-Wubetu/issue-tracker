@@ -79,18 +79,19 @@ export default function UserManagement() {
   return (
     <Box>
       {/* Header */}
-      <Flex justify="between" align="center" mb="6">
+      {/* Header */}
+      <Flex justify="between" align="center" mb="9">
         <Box>
-          <Heading size="7">User Management</Heading>
-          <Text color="gray" size="2">Manage team members, roles, and project assignments.</Text>
+          <Text className="text-hero block mb-1">User Management</Text>
+          <Text color="gray" size="4" weight="medium">Manage team members, roles, and project assignments.</Text>
         </Box>
         <Button color="violet" size="3" onClick={() => setCreateOpen(true)}>
-          <PlusIcon /> Create User
+          <PlusIcon width="18" height="18" /> Create User
         </Button>
       </Flex>
 
       {/* Stats */}
-      <Grid columns={{ initial: '2', sm: '4' }} gap="4" mb="6">
+      <Grid columns={{ initial: '2', sm: '4' }} gap="6" mb="9">
         <StatCard label="Total Users" value={total} color="zinc" />
         <StatCard label="Active" value={active} color="green" />
         <StatCard label="Inactive" value={inactive} color="red" />
@@ -98,8 +99,8 @@ export default function UserManagement() {
       </Grid>
 
       {/* Filters */}
-      <Flex gap="3" mb="4" wrap="wrap">
-        <Box style={{ flex: 1, minWidth: 200 }}>
+      <Flex gap="4" mb="6" wrap="wrap">
+        <Box style={{ flex: 1, minWidth: 300 }}>
           <TextField.Root
             placeholder="Search by name or email…"
             value={search}
@@ -130,15 +131,15 @@ export default function UserManagement() {
       </Flex>
 
       {/* Table */}
-      <Card>
+      <Card className="card-premium p-0 overflow-hidden">
         {loading ? (
-          <Flex align="center" justify="center" p="8">
-            <Text color="gray">Loading users…</Text>
+          <Flex align="center" justify="center" p="9">
+            <Text color="gray" size="4">Loading users…</Text>
           </Flex>
         ) : filtered.length === 0 ? (
-          <Flex align="center" justify="center" direction="column" gap="2" p="8">
-            <PersonIcon width="32" height="32" className="text-gray-300" />
-            <Text color="gray">No users found.</Text>
+          <Flex align="center" justify="center" direction="column" gap="4" p="9">
+            <PersonIcon width="60" height="60" className="text-gray-300" />
+            <Text color="gray" size="4">No users found.</Text>
           </Flex>
         ) : (
           <Table.Root variant="surface">
@@ -160,45 +161,45 @@ export default function UserManagement() {
                 return (
                   <Table.Row key={user.id} align="center">
                     <Table.Cell>
-                      <Flex align="center" gap="2">
+                      <Flex align="center" gap="3">
                         <Avatar
                           src={user.image ?? undefined}
                           fallback={initials}
-                          size="2"
+                          size="3"
                           radius="full"
                           color={roleColors[user.role]}
                         />
                         <Box>
-                          <Text as="p" size="2" weight="medium">{user.name || '—'}</Text>
-                          <Text as="p" size="1" color="gray">{user.email}</Text>
+                          <Text as="p" size="3" weight="bold">{user.name || '—'}</Text>
+                          <Text as="p" size="2" color="gray">{user.email}</Text>
                         </Box>
                       </Flex>
                     </Table.Cell>
                     <Table.Cell>
-                      <Badge color={roleColors[user.role]}>{roleLabels[user.role]}</Badge>
+                      <Badge size="2" color={roleColors[user.role]}>{roleLabels[user.role]}</Badge>
                     </Table.Cell>
                     <Table.Cell>
-                      <Flex align="center" gap="1">
+                      <Flex align="center" gap="2">
                         {user.isActive
-                          ? <><CheckCircledIcon className="text-green-600" /><Badge color="green">Active</Badge></>
-                          : <><CrossCircledIcon className="text-red-500" /><Badge color="red">Inactive</Badge></>
+                          ? <><CheckCircledIcon className="text-green-600" width="20" height="20" /><Badge size="2" color="green">Active</Badge></>
+                          : <><CrossCircledIcon className="text-red-500" width="20" height="20" /><Badge size="2" color="red">Inactive</Badge></>
                         }
                       </Flex>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text size="2">{user.projects.length > 0 ? user.projects.map(p => p.name).join(', ') : <Text color="gray">None</Text>}</Text>
+                      <Text size="3" className="font-medium">{user.projects.length > 0 ? user.projects.map(p => p.name).join(', ') : <Text color="gray">None</Text>}</Text>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text size="2">{user._count.assignedIssues} assigned</Text>
+                      <Text size="3" weight="bold">{user._count.assignedIssues} <Text size="2" weight="medium" color="gray">assigned</Text></Text>
                     </Table.Cell>
                     <Table.Cell>
-                      <Text size="2" color="gray">
+                      <Text size="3" color="gray">
                         {new Date(user.createdAt).toLocaleDateString()}
                       </Text>
                     </Table.Cell>
                     <Table.Cell>
                       <Button
-                        size="1"
+                        size="2"
                         variant="soft"
                         color="violet"
                         onClick={() => setEditingUser(user)}

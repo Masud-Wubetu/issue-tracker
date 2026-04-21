@@ -121,17 +121,17 @@ const IssuesPage = async ({ searchParams }: Props) => {
           {issues.map(issue => (
             <Table.Row key={issue.id}>
               <Table.Cell>
-                <Link href={`/issues/${issue.id}`}>
+                <Link href={`/issues/${issue.id}`} className="text-2xl font-black">
                   {issue.title}
                 </Link>
-                <div className='flex md:hidden flex-wrap gap-2 mt-1'>
-                  <span className="text-xs text-gray-500">{issue.project.name}</span>
+                <div className='flex md:hidden flex-wrap gap-4 mt-3'>
+                  <span className="text-base font-bold text-muted">{issue.project.name}</span>
                   <IssueTypeBadge type={issue.type} />
                   <IssueStatusBadge status={issue.status} />
                 </div>
               </Table.Cell>
               <Table.Cell className='hidden md:table-cell'>
-                <Text size="2">{issue.project.name}</Text>
+                <Text size="5" weight="bold">{issue.project.name}</Text>
               </Table.Cell>
               <Table.Cell className='hidden md:table-cell'>
                 <IssueTypeBadge type={issue.type} />
@@ -142,9 +142,11 @@ const IssuesPage = async ({ searchParams }: Props) => {
               <Table.Cell className='hidden md:table-cell'>
                 <IssueStatusBadge status={issue.status} />
               </Table.Cell>
-              <Table.Cell className='hidden md:table-cell'>{issue.createdAt.toDateString()}</Table.Cell>
+              <Table.Cell className='hidden md:table-cell'>
+                <Text size="5">{issue.createdAt.toDateString()}</Text>
+              </Table.Cell>
               <Table.Cell>
-                <Button variant="soft" size="1" asChild>
+                <Button variant="soft" size="3" color="gray" asChild>
                   <NextLink href={`/issues/${issue.id}`}>Manage</NextLink>
                 </Button>
               </Table.Cell>
