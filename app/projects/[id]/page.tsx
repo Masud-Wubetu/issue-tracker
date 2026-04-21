@@ -8,10 +8,11 @@ import Link from "next/link";
 import { ArrowLeftIcon, Pencil1Icon } from "@radix-ui/react-icons";
 import { Metadata } from "next";
 
-interface Props { params: { id: string } }
+interface Props { params: Promise<{ id: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const project = await prisma.project.findUnique({ where: { id: parseInt(params.id) }, select: { name: true } });
+  const { id } = await params;
+  const project = await prisma.project.findUnique({ where: { id: parseInt(id) }, select: { name: true } });
   return { title: project?.name ?? "Project" };
 }
 
@@ -25,10 +26,11 @@ const StatCard = ({ label, value, color }: { label: string; value: number; color
 );
 
 export default async function ProjectDashboardPage({ params }: Props) {
+  const { id: idParam } = await params;
   const session = await getServerSession(authOptions);
   if (!session) redirect("/auth/signin");
 
-  const id = parseInt(params.id);
+  const id = parseInt(idParam);
   if (isNaN(id)) notFound();
 
   const [project, issueStats] = await Promise.all([

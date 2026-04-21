@@ -11,11 +11,12 @@ const userSelect = {
   _count: { select: { assignedIssues: true, reportedIssues: true } },
 };
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const user = await prisma.user.findUnique({ where: { id: params.id }, select: userSelect });
+  const user = await prisma.user.findUnique({ where: { id }, select: userSelect });
   if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
   return NextResponse.json(user);
 }
@@ -26,7 +27,8 @@ const updateSchema = z.object({
   projectIds: z.array(z.number()).optional(),
 });
 
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getServerSession(authOptions);
   if (!session || (session.user as any).role !== "ADMIN")
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -38,7 +40,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
   const { role, isActive, projectIds } = validation.data;
   const user = await prisma.user.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       ...(role !== undefined ? { role } : {}),
       ...(isActive !== undefined ? { isActive } : {}),

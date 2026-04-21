@@ -5,21 +5,18 @@ import authOptions from "@/app/auth/authOptions";
 import path from "path";
 import fs from "fs";
 
-export async function POST(request: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const issueId = parseInt(params.id);
+    const issueId = parseInt(id);
     const issue = await prisma.issue.findUnique({ where: { id: issueId } });
     if (!issue) return NextResponse.json({ error: "Issue not found" }, { status: 404 });
 
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     if (!file) return NextResponse.json({ error: "No file provided" }, { status: 400 });
-
-    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf", "text/plain", "text/csv", "application/json", "application/zip", "application/octet-stream"];
-    if (file.size > 10 * 1024 * 1024)
-        return NextResponse.json({ error: "File too large (max 10MB)." }, { status: 400 });
 
     const uploadDir = path.join(process.cwd(), "public", "uploads");
     if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
@@ -42,7 +39,8 @@ export async function POST(request: NextRequest, { params }: { params: { id: str
     return NextResponse.json(attachment, { status: 201 });
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

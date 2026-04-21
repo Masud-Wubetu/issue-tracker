@@ -6,47 +6,57 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: idParam } = await params;
   const session = await getServerSession(authOptions);
+
   if (!session) return NextResponse.json({}, { status: 401 });
 
   const body = await request.json();
   const validation = patchIssueSchema.safeParse(body);
-  if (!validation.success)
+  if (!validation.success) {
+    console.error("Validation error:", validation.error.format());
     return NextResponse.json(validation.error.format(), { status: 400 });
+  }
 
-  const { assigneeId, title, description, status, priority, type, dueDate, projectId } = body;
+  const { assigneeId, title, description, status, priority, type, dueDate, projectId } = validation.data;
 
   if (assigneeId) {
     const user = await prisma.user.findUnique({ where: { id: assigneeId } });
     if (!user) return NextResponse.json({ error: "Invalid user." }, { status: 400 });
   }
 
-  const issue = await prisma.issue.findUnique({ where: { id: parseInt(params.id) } });
-  if (!issue) return NextResponse.json({ error: "Invalid issue" }, { status: 404 });
+  const id = parseInt(idParam);
+  if (isNaN(id)) return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
 
-  const updatedIssue = await prisma.issue.update({
-    where: { id: issue.id },
-    data: {
-      title,
-      description,
-      status,
-      priority,
-      type,
-      assigneeId,
-      ...(projectId ? { projectId } : {}),
-      ...(dueDate !== undefined ? { dueDate: dueDate ? new Date(dueDate) : null } : {}),
-    },
-  });
-
-  return NextResponse.json(updatedIssue);
+  try {
+    const updatedIssue = await prisma.issue.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        status,
+        priority,
+        type,
+        assigneeId,
+        ...(projectId ? { projectId } : {}),
+        ...(dueDate !== undefined ? { dueDate: dueDate ? new Date(dueDate) : null } : {}),
+      },
+    });
+    return NextResponse.json(updatedIssue);
+  } catch (error) {
+    console.error("Update error:", error);
+    return NextResponse.json({ error: "Update failed" }, { status: 500 });
+  }
 }
+
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id: idParam } = await params;
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({}, { status: 401 });
 
@@ -55,7 +65,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
 
-  const issue = await prisma.issue.findUnique({ where: { id: parseInt(params.id) } });
+  const issue = await prisma.issue.findUnique({ where: { id: parseInt(idParam) } });
   if (!issue) return NextResponse.json({ error: "Invalid issue" }, { status: 404 });
 
   await prisma.issue.delete({ where: { id: issue.id } });

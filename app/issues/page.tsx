@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { Table, Flex, Text } from '@radix-ui/themes'
+import { Table, Flex, Text, Button } from '@radix-ui/themes'
 import Link from '@/app/component/Link'
 import NextLink from 'next/link';
 import { prisma } from '@/prisma/client'
@@ -27,7 +27,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
 
   const columns: { 
     label: string; 
-    value: keyof Issue | 'project'; 
+    value: keyof Issue | 'project' | 'actions'; 
     className?: string 
   }[] = [
     { label: 'Issue', value: 'title' },
@@ -36,10 +36,12 @@ const IssuesPage = async ({ searchParams }: Props) => {
     { label: 'Priority', value: 'priority', className: 'hidden md:table-cell' },
     { label: 'Status', value: 'status', className: 'hidden md:table-cell' },
     { label: 'Created', value: 'createdAt', className: 'hidden md:table-cell' },
+    { label: '', value: 'actions' },
   ];
 
   const orderByField = columns
     .map(column => column.value)
+    .filter(v => v !== 'project' && v !== 'actions')
     .includes(orderBy)
     ? { [orderBy]: 'asc' }
     : undefined;
@@ -65,7 +67,7 @@ const IssuesPage = async ({ searchParams }: Props) => {
           <Table.Row>
             {columns.map(column => (
               <Table.ColumnHeaderCell key={column.value} className={column.className}>
-                {column.value !== 'project' ? (
+                {column.value !== 'project' && column.value !== 'actions' ? (
                   <NextLink href={{
                     query: { ...resolvedSearchParams, orderBy: column.value }
                   }}>
@@ -106,6 +108,11 @@ const IssuesPage = async ({ searchParams }: Props) => {
                 <IssueStatusBadge status={issue.status} />
               </Table.Cell>
               <Table.Cell className='hidden md:table-cell'>{issue.createdAt.toDateString()}</Table.Cell>
+              <Table.Cell>
+                <Button variant="soft" size="1" asChild>
+                  <NextLink href={`/issues/${issue.id}`}>Manage</NextLink>
+                </Button>
+              </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
@@ -118,7 +125,6 @@ const IssuesPage = async ({ searchParams }: Props) => {
     </Flex>
   )
 }
-
 
 export const dynamic = 'force-dynamic';
 
