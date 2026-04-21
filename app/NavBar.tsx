@@ -10,6 +10,9 @@ import classnames from 'classnames';
 import { Avatar, Box, Container, DropdownMenu, Flex, Text } from '@radix-ui/themes';
 
 const NavBar = () => {
+    const { data: session } = useSession();
+    const role = (session?.user as any)?.role;
+
     return (
         <nav className='border-b mb-5 px-5 py-3'>
             <Container>
@@ -18,7 +21,7 @@ const NavBar = () => {
                         <Link href='/'>
                             <AiFillBug size="24" className='text-violet-600 hover:text-violet-700 transition-colors' />
                         </Link>
-                        <NavLinks />
+                        <NavLinks role={role} />
                     </Flex>
                     <AuthStatus />
                 </Flex>
@@ -27,12 +30,13 @@ const NavBar = () => {
     )
 }
 
-const NavLinks = () => {
+const NavLinks = ({ role }: { role?: string }) => {
     const currentPath = usePathname();
 
     const links = [
         { label: 'Dashboard', href: '/' },
         { label: 'Issues', href: '/issues' },
+        ...(role === 'ADMIN' ? [{ label: 'Users', href: '/admin/users' }] : []),
     ];
 
     return (
@@ -62,12 +66,7 @@ const AuthStatus = () => {
     if (status === 'unauthenticated')
         return (
             <Flex gap="3" align="center">
-                <Link
-                    className='nav-link text-sm'
-                    href='/auth/signin'
-                >
-                    Login
-                </Link>
+                <Link className='nav-link text-sm' href='/auth/signin'>Login</Link>
                 <Link
                     className='text-sm font-semibold text-white bg-violet-600 hover:bg-violet-700 transition-colors px-4 py-1.5 rounded-full'
                     href='/auth/register'
@@ -104,16 +103,11 @@ const AuthStatus = () => {
                     </button>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content variant='soft' size="2" align="end" sideOffset={8}>
-                    {/* User info header */}
                     <div className="px-2 py-1.5 min-w-[180px]">
                         {session!.user!.name && (
-                            <Text as="p" size="2" weight="bold">
-                                {session!.user!.name}
-                            </Text>
+                            <Text as="p" size="2" weight="bold">{session!.user!.name}</Text>
                         )}
-                        <Text as="p" size="1" color="gray">
-                            {session!.user!.email}
-                        </Text>
+                        <Text as="p" size="1" color="gray">{session!.user!.email}</Text>
                     </div>
                     <DropdownMenu.Separator />
                     <DropdownMenu.Item asChild>
