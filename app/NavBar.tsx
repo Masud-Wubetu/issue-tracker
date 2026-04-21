@@ -34,11 +34,12 @@ const NavLinks = ({ role }: { role?: string }) => {
     const currentPath = usePathname();
 
     const links = [
-        { label: 'Dashboard', href: '/' },
+        { label: 'Dashboard', href: '/dashboard' },
         { label: 'Issues', href: '/issues' },
         ...(role ? [{ label: 'Projects', href: '/projects' }] : []),
         ...(role === 'ADMIN' ? [{ label: 'Users', href: '/admin/users' }] : []),
     ];
+
 
     return (
         <ul className='flex space-x-6'>

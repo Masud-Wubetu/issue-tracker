@@ -44,7 +44,30 @@ export async function PATCH(
         ...(dueDate !== undefined ? { dueDate: dueDate ? new Date(dueDate) : null } : {}),
       },
     });
+
+    // Log activity for significant changes
+    if (status) {
+        await prisma.activityLog.create({
+            data: {
+                action: `Changed status to ${status}`,
+                issueId: id,
+                userId: (session.user as any).id,
+            }
+        });
+    }
+
+    if (assigneeId !== undefined) {
+        await prisma.activityLog.create({
+            data: {
+                action: assigneeId ? "Assigned the issue" : "Unassigned the issue",
+                issueId: id,
+                userId: (session.user as any).id,
+            }
+        });
+    }
+
     return NextResponse.json(updatedIssue);
+
   } catch (error) {
     console.error("Update error:", error);
     return NextResponse.json({ error: "Update failed" }, { status: 500 });

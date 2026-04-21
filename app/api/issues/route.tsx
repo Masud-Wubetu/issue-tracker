@@ -66,5 +66,15 @@ export async function POST(request: NextRequest) {
             ...(dueDate ? { dueDate: new Date(dueDate) } : {}),
         }
     });
+
+    await prisma.activityLog.create({
+        data: {
+            action: "Created the issue",
+            issueId: newIssue.id,
+            userId: reporterId,
+        }
+    });
+
     return NextResponse.json(newIssue, { status: 201 });
 }
+
