@@ -57,7 +57,7 @@ const RegisterPage = () => {
     });
 
     return (
-        <Container size="1">
+        <Box className="max-w-[480px] mx-auto w-full px-4">
             <Box mt="9">
                 <Card size="4" className="card-premium">
                     <Heading mb="4">Create an Account</Heading>
@@ -116,7 +116,7 @@ const RegisterPage = () => {
                     </Text>
                 </Card>
             </Box>
-        </Container>
+        </Box>
     );
 }
 

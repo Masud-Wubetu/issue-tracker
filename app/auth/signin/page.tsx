@@ -54,7 +54,7 @@ const SignInFormContent = () => {
     });
 
     return (
-        <Container size="1">
+        <Box className="max-w-[480px] mx-auto w-full px-4">
             <Flex direction="column" align="center" mt="9" gap="6">
                 {/* Logo */}
                 <Flex align="center" gap="3">
@@ -125,7 +125,7 @@ const SignInFormContent = () => {
                     </Text>
                 </Card>
             </Flex>
-        </Container>
+        </Box>
     );
 };
 
