@@ -85,6 +85,7 @@ const SignInFormContent = () => {
                                     type="email"
                                     placeholder="you@example.com"
                                     mt="1"
+                                    autoComplete="email"
                                     {...register('email')}
                                 />
                                 <ErrorMessage>{errors.email?.message}</ErrorMessage>
@@ -99,6 +100,7 @@ const SignInFormContent = () => {
                                     type="password"
                                     placeholder="Enter your password"
                                     mt="1"
+                                    autoComplete="current-password"
                                     {...register('password')}
                                 />
                                 <ErrorMessage>{errors.password?.message}</ErrorMessage>

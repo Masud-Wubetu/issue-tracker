@@ -70,12 +70,12 @@ const RegisterPage = () => {
                         <Flex direction="column" gap="3">
                             <Box>
                                 <Text as="div" size="2" mb="1" weight="bold">Name</Text>
-                                <TextField.Root placeholder="Your name" {...register('name')} />
+                                <TextField.Root placeholder="Your name" autoComplete="name" {...register('name')} />
                                 <ErrorMessage>{errors.name?.message}</ErrorMessage>
                             </Box>
                             <Box>
                                 <Text as="div" size="2" mb="1" weight="bold">Email</Text>
-                                <TextField.Root placeholder="Email address" {...register('email')} />
+                                <TextField.Root placeholder="Email address" autoComplete="email" {...register('email')} />
                                 <ErrorMessage>{errors.email?.message}</ErrorMessage>
                             </Box>
                             <Box>
@@ -100,7 +100,7 @@ const RegisterPage = () => {
                             </Box>
                             <Box>
                                 <Text as="div" size="2" mb="1" weight="bold">Password</Text>
-                                <TextField.Root type="password" placeholder="Password" {...register('password')} />
+                                <TextField.Root type="password" placeholder="Password" autoComplete="new-password" {...register('password')} />
                                 <ErrorMessage>{errors.password?.message}</ErrorMessage>
                             </Box>
                             <Button disabled={isSubmitting} mt="2" variant="solid" color="violet">

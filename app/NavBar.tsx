@@ -21,7 +21,7 @@ const NavBar = () => {
                     <Flex align="center" gap="8">
                         <Link href='/' className="flex items-center gap-3">
                             <AiFillBug size="36" className='text-violet-600 hover:text-violet-700 transition-transform hover:scale-110 duration-300' />
-                            <Text size="6" weight="bold" className="tracking-tighter hidden sm:inline-block">IssueTracker</Text>
+                            <Text size="6" weight="bold" className="tracking-tighter hidden sm:inline-block">TeamFlow</Text>
                         </Link>
                         <NavLinks role={role} />
                     </Flex>
